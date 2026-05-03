@@ -1,0 +1,8 @@
+[user]
+	email = greeschenko@gmail.com
+	name = Alex Hryshchenko
+[push]
+	default = matching
+[core]
+	autocrlf = input
+	pager = cat

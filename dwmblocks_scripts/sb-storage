@@ -1,0 +1,31 @@
+#!/bin/sh
+# Storage: 10-block braille bar + percentage (root filesystem)
+
+total=$(df / | awk '/^\// {print $2}')
+used=$(df / | awk '/^\// {print $3}')
+percent=$((used * 100 / total))
+
+bar=""
+blocks=$((percent / 10))
+remainder=$((percent % 10))
+
+i=1
+while [ "$i" -lt 10 ]; do
+    if [ "$i" -le "$blocks" ]; then
+        bar="${bar}⠿"
+    elif [ "$i" -eq $((blocks + 1)) ] && [ "$remainder" -ge 5 ]; then
+        bar="${bar}⠧"
+    else
+        bar="${bar} "
+    fi
+    i=$((i + 1))
+done
+
+if [ "$percent" -lt 100 ]; then
+    bar="${bar}⠸"
+else
+    bar="${bar}"
+fi
+
+pct=$(printf "%3d" "$percent")
+echo "$bar$pct%"

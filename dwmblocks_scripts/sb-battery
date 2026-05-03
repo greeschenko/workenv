@@ -1,0 +1,39 @@
+#!/bin/sh
+# Battery: 10-block braille bar + percentage + status icon
+
+BAT_PATH="/sys/class/power_supply/BAT0"
+
+capacity=$(cat "$BAT_PATH/capacity" 2>/dev/null)
+status=$(cat "$BAT_PATH/status" 2>/dev/null)
+
+case "$status" in
+    Charging) icon="+" ;;
+    Discharging) icon="-" ;;
+    Full) icon="=" ;;
+    *) icon="?" ;;
+esac
+
+bar=""
+blocks=$((capacity / 10))
+remainder=$((capacity % 10))
+
+i=1
+while [ "$i" -lt 10 ]; do
+    if [ "$i" -le "$blocks" ]; then
+        bar="${bar}⠿"
+    elif [ "$i" -eq $((blocks + 1)) ] && [ "$remainder" -ge 5 ]; then
+        bar="${bar}⠧"
+    else
+        bar="${bar} "
+    fi
+    i=$((i + 1))
+done
+
+if [ "$capacity" -lt 100 ]; then
+    bar="${bar}⠸ "
+else
+    bar="${bar} "
+fi
+
+pct=$(printf "%3d" "$capacity")
+echo "$bar$pct$icon"

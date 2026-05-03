@@ -1,0 +1,23 @@
+#!/bin/sh
+# Network: WiFi signal + Bluetooth status
+
+wifi_icon="󰖪"
+wifi_signal="  0"
+
+if ip link show wlan0 2>/dev/null | grep -q "state UP"; then
+    signal=$(cat /proc/net/wireless 2>/dev/null | grep wlan0 | awk '{gsub(/-/,""); print int($4)}')
+    if [ -n "$signal" ] && [ "$signal" -gt 0 ]; then
+        wifi_icon="󰖩"
+        wifi_signal=$(printf "%3d" "$signal")
+    fi
+fi
+
+bt_icon="󰂲"
+if rfkill list bluetooth 2>/dev/null | grep -q "Soft blocked: no"; then
+    bt_icon="󰂯"
+    if bluetoothctl devices Connected 2>/dev/null | grep -q "Device"; then
+        bt_icon="󰂱"
+    fi
+fi
+
+echo "$wifi_icon $wifi_signal $bt_icon"

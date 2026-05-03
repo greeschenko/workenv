@@ -1,0 +1,104 @@
+#!/bin/sh
+# CPU: overall % + 8 grouped bars (2 cores per bar)
+
+PREV_FILE="/tmp/cpu_prev"
+
+map_dots() {
+    pct=$1
+    if [ "$pct" -le 19 ]; then
+        printf '⠄'
+    elif [ "$pct" -le 39 ]; then
+        printf '⠤'
+    elif [ "$pct" -le 59 ]; then
+        printf '⠦'
+    elif [ "$pct" -le 79 ]; then
+        printf '⠶'
+    elif [ "$pct" -le 99 ]; then
+        printf '⠷'
+    else
+        printf '⠿'
+    fi
+}
+
+NUM_BARS=8
+
+CORES_LINE=$(grep "^cpu " /proc/stat)
+OLD_TOTAL=$(echo "$CORES_LINE" | awk '{print $2+$3+$4+$5+$6+$7+$8}')
+OLD_IDLE=$(echo "$CORES_LINE" | awk '{print $5+$6}')
+
+if [ -f "$PREV_FILE" ]; then
+    PREV_LINE=$(cat "$PREV_FILE")
+    PREV_TOTAL=$(echo "$PREV_LINE" | awk '{print $1}')
+    PREV_IDLE=$(echo "$PREV_LINE" | awk '{print $2}')
+else
+    PREV_TOTAL=0
+    PREV_IDLE=0
+fi
+
+if [ "$PREV_TOTAL" -gt 0 ]; then
+    DIFF_TOTAL=$((OLD_TOTAL - PREV_TOTAL))
+    DIFF_IDLE=$((OLD_IDLE - PREV_IDLE))
+    if [ "$DIFF_TOTAL" -gt 0 ]; then
+        overall=$((100 * DIFF_IDLE / DIFF_TOTAL))
+        overall=$((100 - overall))
+    else
+        overall=0
+    fi
+else
+    overall=0
+fi
+
+echo "$OLD_TOTAL $OLD_IDLE" > "$PREV_FILE"
+
+CORES0_LINE=$(head -17 /proc/stat | grep "^cpu")
+
+g=0
+while [ "$g" -lt "$NUM_BARS" ]; do
+    c1=$((g * 2 + 1))
+    c2=$((g * 2 + 2))
+
+    CORE_LINE1=$(echo "$CORES0_LINE" | sed -n "${c1}p")
+    CORE_LINE2=$(echo "$CORES0_LINE" | sed -n "${c2}p")
+
+    NEW_TOTAL1=$(echo "$CORE_LINE1" | awk '{print $2+$3+$4+$5+$6+$7+$8}')
+    NEW_IDLE1=$(echo "$CORE_LINE1" | awk '{print $5+$6}')
+    NEW_TOTAL2=$(echo "$CORE_LINE2" | awk '{print $2+$3+$4+$5+$6+$7+$8}')
+    NEW_IDLE2=$(echo "$CORE_LINE2" | awk '{print $5+$6}')
+
+    COMBINED_TOTAL=$((NEW_TOTAL1 + NEW_TOTAL2))
+    COMBINED_IDLE=$((NEW_IDLE1 + NEW_IDLE2))
+
+    if [ -f "/tmp/cpu_group_prev_$g" ]; then
+        OLD_GROUP=$(cat "/tmp/cpu_group_prev_$g")
+        OLD_COMBINED_TOTAL=$(echo "$OLD_GROUP" | awk '{print $1}')
+        OLD_COMBINED_IDLE=$(echo "$OLD_GROUP" | awk '{print $2}')
+    else
+        OLD_COMBINED_TOTAL=0
+        OLD_COMBINED_IDLE=0
+    fi
+
+    if [ "$OLD_COMBINED_TOTAL" -gt 0 ]; then
+        DIFF_GROUP_TOTAL=$((COMBINED_TOTAL - OLD_COMBINED_TOTAL))
+        DIFF_GROUP_IDLE=$((COMBINED_IDLE - OLD_COMBINED_IDLE))
+        if [ "$DIFF_GROUP_TOTAL" -gt 0 ]; then
+            USAGE=$((100 * DIFF_GROUP_IDLE / DIFF_GROUP_TOTAL))
+            USAGE=$((100 - USAGE))
+        else
+            USAGE=0
+        fi
+    else
+        USAGE=0
+    fi
+
+    [ "$USAGE" -lt 0 ] && USAGE=0
+    [ "$USAGE" -gt 100 ] && USAGE=100
+
+    BARS="${BARS}$(map_dots "$USAGE")"
+    echo "$COMBINED_TOTAL $COMBINED_IDLE" > "/tmp/cpu_group_prev_$g"
+
+    g=$((g + 1))
+done
+
+pct=$(printf "%3d" "$overall")
+temp=$(sensors | grep edge | awk '{print $2}' | tr -d '+°C' | cut -d. -f1)
+echo "${BARS}${pct}% ${temp}C"

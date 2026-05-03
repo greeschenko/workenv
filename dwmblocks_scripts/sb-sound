@@ -1,0 +1,25 @@
+#!/bin/sh
+# Sound: speaker icon + volume percentage
+
+get_volume() {
+    pactl get-sink-volume @DEFAULT_SINK@ 2>/dev/null | grep -o '[0-9]*%' | head -1 | tr -d '%'
+}
+
+get_mute() {
+    pactl get-sink-mute @DEFAULT_SINK@ 2>/dev/null | grep -o 'yes\|no'
+}
+
+mute=$(get_mute)
+volume=$(get_volume)
+
+if [ "$mute" = "yes" ] || [ -z "$volume" ]; then
+    icon="󰝟"
+    volume=0
+elif [ "$volume" -eq 0 ]; then
+    icon="󰖁"
+else
+    icon="󰕾"
+fi
+
+pct=$(printf "%3d" "$volume")
+echo "$icon $pct%"

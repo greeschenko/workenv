@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# dmenu_system - System menu for dwm
+# Flat list with descriptive action names
+
+TERM="st -e"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+choice=$(printf "%s\n" \
+    "[Power] Lock Screen" \
+    "[Power] Suspend" \
+    "[Power] Hibernate" \
+    "[Power] Reboot" \
+    "[Power] Restart to UEFI" \
+    "[Power] Shutdown" \
+    "[Power] Logout" \
+    "[Audio] Volume Control" \
+    "[Network] WiFi Control" \
+    "[Network] Bluetooth Control" \
+    "[Network] Network Monitor" \
+    "[Network] Bandwidth Monitor" \
+    "[Network] Live Interface Monitor" \
+    "[System] Update System" \
+    "[System] Resource Monitor" \
+    "[System] Disk Usage" \
+    "[Screenshot] Full Screen" \
+    "[Screenshot] Selection" \
+    "[Recording] With Audio" \
+    "[Recording] Without Audio" \
+    "[Recording] Stop" \
+    | dmenu -i "$@" -p "System:") || exit 1
+
+case "$choice" in
+    "[Power] Lock Screen") "$SCRIPT_DIR/lock.sh" ;;
+    "[Power] Suspend") systemctl suspend ;;
+    "[Power] Hibernate") systemctl hibernate ;;
+    "[Power] Reboot") systemctl reboot ;;
+    "[Power] Restart to UEFI") systemctl reboot --firmware-setup ;;
+    "[Power] Shutdown") systemctl poweroff ;;
+    "[Power] Logout") pkill dwm ;;
+    "[Audio] Volume Control") pavucontrol ;;
+    "[Network] WiFi Control") $TERM iwctl ;;
+    "[Network] Bluetooth Control") $TERM bluetoothctl ;;
+    "[Network] Network Monitor") $TERM iftop ;;
+    "[Network] Bandwidth Monitor") $TERM nload ;;
+    "[Network] Live Interface Monitor") $TERM ip monitor ;;
+    "[System] Update System") $TERM sudo pacman -Syu ;;
+    "[System] Resource Monitor") $TERM htop ;;
+    "[System] Disk Usage") $TERM df -h ;;
+    "[Screenshot] Full Screen") ~/prodev/workenv/Scripts/getscreenshot.sh ;;
+    "[Screenshot] Selection") ~/prodev/workenv/Scripts/getscreenshotsel.sh ;;
+    "[Recording] With Audio") ~/prodev/workenv/Scripts/getscreencast.sh ;;
+    "[Recording] Without Audio") ~/prodev/workenv/Scripts/getscreencastnoaudio.sh ;;
+    "[Recording] Stop") killall ffmpeg 2>/dev/null && notify-send "Recording stopped" || notify-send "No recording in progress" ;;
+esac

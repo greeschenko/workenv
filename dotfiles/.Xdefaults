@@ -1,0 +1,83 @@
+!Xcursor.theme: Oxygen Neon
+!Xcursor.size: 16
+
+!-------------------------------------------------------------------------------
+ !
+ !	X T E R M - Setting
+ !
+ !
+ !
+
+*background:                       #262626
+*foreground:                       #a8a8a8
+!*cursorColor:                     darkorange1
+*termName:                         xterm-256color
+!Xterm*font: 10x20
+*faceName: xft:Droid Sans Mono Slashed for Powerline:antialias=true:autohint=false
+!*faceName: xft:fontawesome-webfont:antialias=true:autohint=false
+!Xterm*bolfFont: xft:Droid Sans Mono Slashed for Powerline:pixelsize=13:antialias=true:autohint=true:weight=200
+!*faceName: -*-terminus-medium-r-*-*-13-*-*-*-*-*-*-*
+!*faceName: -*-fixed-*-*-*-*-13-*-*-*-*-*-*-r
+!*faceName: -*-fontawesome-webfont-*-*-*-*-13-*-*-*-*-*-*-r
+
+*faceSize: 9.5
+*faceSize1: 7
+*faceSize2: 8
+*faceSize3: 11
+*faceSize4: 12
+*faceSize5: 14
+*faceSize6: 18
+
+
+*saveLines:                        500
+*loginShell:                       true
+*metaSendsEscape:                  true
+*highlightSelection:               true
+*trimSelection:                    true
+*cutNewline:                       false
+!*colorBDMode:                      true
+!*colorBD:                          khaki
+*utf8Title: true
+*geometry:         80x50
+*eightBitInput:    false
+*boldMode:         false
+*alwaysBoldMode:   true
+*dynamicColors:    false
+*colorMode:        true
+*visualBell:       false
+!*charClass: 3:48,35:48,37:48,43:48,45-47:48,64:48,95:48,126:48,35:48,58:48,63:48,61:48,44:48,38:48,59:48
+
+*scrollBar:                        false
+*locale:                          true
+*utf8:                            2
+!*transparent: true
+*jumpScroll: true
+*skipScroll: true
+
+
+! Black + DarkGrey
+*color0:  #000000
+*color8:  #555753
+! DarkRed + Red
+*color1:  #d70000
+*color9:  #d70000
+! DarkGreen + Green
+*color2:  #93d44f
+*color10: #c8e7a8
+! DarkYellow + Yellow
+*color3:  #eab93d
+*color11: #ffc123
+! DarkBlue + Blue
+*color4:  #204a87
+*color12: #3465a4
+! DarkMagenta + Magenta
+*color5:  #ce5c00
+*color13: #f57900
+!DarkCyan + Cyan (both not tango)
+*color6:  #89b6e2
+*color14: #46a4ff
+! LightGrey + White
+*color7:  #cccccc
+*color15: #ffffff
+
+XTerm*ptyInitialErase: true
