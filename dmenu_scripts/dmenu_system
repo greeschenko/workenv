@@ -27,6 +27,7 @@ choice=$(printf "%s\n" \
     "[Screenshot] Selection" \
     "[Recording] With Audio" \
     "[Recording] Without Audio" \
+    "[Recording] With Audio And WebCam" \
     "[Recording] Stop" \
     | dmenu -i "$@" -p "System:") || exit 1
 
@@ -51,5 +52,6 @@ case "$choice" in
     "[Screenshot] Selection") ~/prodev/workenv/Scripts/getscreenshotsel.sh ;;
     "[Recording] With Audio") ~/prodev/workenv/Scripts/getscreencast.sh ;;
     "[Recording] Without Audio") ~/prodev/workenv/Scripts/getscreencastnoaudio.sh ;;
+    "[Recording] With Audio And WebCam") ~/prodev/workenv/Scripts/getscreencastwebcam.sh ;;
     "[Recording] Stop") killall ffmpeg 2>/dev/null && notify-send "Recording stopped" || notify-send "No recording in progress" ;;
 esac
